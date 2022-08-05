@@ -40,7 +40,6 @@ public class NewsPostDaoImpl extends AbstractDao implements NewsPostDao {
     @Override
     public List<NewsPost> getWithMetadataSizeLargerThan(long size) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             return (List<NewsPost>) session.createCriteria(NewsPost.class)
                     .add(Property.forName("metadata.size").gt(size))
                     .list();
