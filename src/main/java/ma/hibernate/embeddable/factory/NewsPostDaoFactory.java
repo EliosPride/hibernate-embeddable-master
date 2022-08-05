@@ -14,9 +14,8 @@ public class NewsPostDaoFactory extends AbstractDao {
     }
 
     public static NewsPostDao getInstance() {
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
         if (newsPostDao == null) {
-            newsPostDao = new NewsPostDaoImpl(sessionFactory);
+            newsPostDao = new NewsPostDaoImpl(HibernateUtil.getSessionFactory());
         }
         return newsPostDao;
     }

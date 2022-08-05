@@ -1,16 +1,9 @@
 package ma.hibernate.embeddable.model;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
-@AttributeOverrides({
-        @AttributeOverride(name = "size", column = @Column(name = "data_size")),
-        @AttributeOverride(name = "hashSum", column = @Column(name = "data_hash_sum"))
-})
 public class PostMetadata {
     private long size; // in bytes
     private String hashSum;

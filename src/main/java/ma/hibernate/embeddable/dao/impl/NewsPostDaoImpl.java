@@ -7,6 +7,7 @@ import ma.hibernate.embeddable.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Property;
 import org.hibernate.query.Query;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,9 +23,8 @@ public class NewsPostDaoImpl extends AbstractDao implements NewsPostDao {
 
     @Override
     public NewsPost save(NewsPost post) {
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.save(post);
             transaction.commit();
@@ -39,21 +39,11 @@ public class NewsPostDaoImpl extends AbstractDao implements NewsPostDao {
 
     @Override
     public List<NewsPost> getWithMetadataSizeLargerThan(long size) {
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<NewsPost> criteriaQuery = criteriaBuilder.createQuery(NewsPost.class);
-            Root<NewsPost> root = criteriaQuery.from(NewsPost.class);
-            criteriaQuery.select(root);
-            Query<NewsPost> query = session.createQuery(criteriaQuery);
-            List<NewsPost> notSortedList = query.getResultList();
-            List<NewsPost> postList = new ArrayList<>();
-            for (NewsPost element : notSortedList) {
-                if(element.getMetadata().getSize() > size) {
-                    postList.add(element);
-                }
-            }
-            return postList;
+            return (List<NewsPost>) session.createCriteria(NewsPost.class)
+                    .add(Property.forName("metadata.size").gt(size))
+                    .list();
         } catch (Exception e) {
             throw new DataProcessingException("Can't get post with big size", e);
         }
